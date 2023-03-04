@@ -9,10 +9,13 @@ import { ethers } from "ethers";
 import Web3Modal from "web3modal";
 import { useNavigate } from "react-router-dom";
 import { ABI, ADDRESS } from "../contract";
+import { createEventListeners } from "./createEventListeners";
 
 const GlobalContext = createContext();
 
 export const GlobalContextProvider = ({ children }) => {
+  const navigate = useNavigate();
+
   // useStates
   const [walletAddress, setWalletAddress] = useState("");
   const [provider, setProvider] = useState("");
@@ -63,6 +66,18 @@ export const GlobalContextProvider = ({ children }) => {
       return () => clearTimeout(timer);
     }
   }, [showAlert]);
+
+  useEffect(() => {
+    if (contract) {
+      createEventListeners({
+        navigate,
+        contract,
+        provider,
+        walletAddress,
+        setShowAlert,
+      });
+    }
+  }, [contract]);
 
   return (
     <GlobalContext.Provider
