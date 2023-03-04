@@ -31,6 +31,7 @@ export const GlobalContextProvider = ({ children }) => {
     pendingBattles: [],
     activeBattle: null,
   });
+  const [updateGameData, setUpdateGameData] = useState(0);
 
   // set the wallet address to state
   const updateCurrentWalletAddress = async () => {
@@ -83,6 +84,7 @@ export const GlobalContextProvider = ({ children }) => {
         provider,
         walletAddress,
         setShowAlert,
+        setUpdateGameData,
       });
     }
   }, [contract]);
@@ -114,7 +116,7 @@ export const GlobalContextProvider = ({ children }) => {
     };
 
     fetchGameData();
-  }, [contract]);
+  }, [contract, updateGameData]);
 
   return (
     <GlobalContext.Provider
