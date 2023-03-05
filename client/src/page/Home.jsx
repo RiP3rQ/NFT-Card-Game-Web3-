@@ -5,7 +5,8 @@ import { useGlobalContext } from "../context";
 
 const Home = () => {
   const navigate = useNavigate();
-  const { contract, walletAddress, setShowAlert } = useGlobalContext();
+  const { contract, walletAddress, setShowAlert, gameData } =
+    useGlobalContext();
   const [playerName, setPlayerName] = useState("");
 
   const handleClick = async () => {
