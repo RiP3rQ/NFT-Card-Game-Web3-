@@ -14,7 +14,7 @@ const Home = () => {
 
       if (!playerExists) {
         await contract.registerPlayer(playerName, playerName, {
-          gasLimit: 500000,
+          gasLimit: 200000,
         });
 
         setShowAlert({
@@ -44,6 +44,12 @@ const Home = () => {
 
     checkForPlayerToken();
   }, [contract]);
+
+  useEffect(() => {
+    if (gameData.activeBattle) {
+      navigate(`/battle/${gameData.activeBattle.name}`);
+    }
+  }, [gameData]);
 
   return (
     <div className="flex flex-col">
