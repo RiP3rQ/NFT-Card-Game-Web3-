@@ -24,6 +24,8 @@ const Battle = () => {
     setShowAlert,
     battleGround,
     setErrorMessage,
+    player1Ref,
+    player2Ref,
   } = useGlobalContext();
   const [player2, setPlayer2] = useState({});
   const [player1, setPlayer1] = useState({});
@@ -81,6 +83,16 @@ const Battle = () => {
     if (contract && gameData.activeBattle) getPlayerInfo();
   }, [contract, gameData, battleName]);
 
+  // on battle finish navigate to home
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (!gameData?.activeBattle) navigate("/");
+    }, [2000]);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  // attack or defend choice
   const makeAMove = async (choice) => {
     playAudio(choice === 1 ? attackSound : defenseSound);
 
@@ -108,7 +120,12 @@ const Battle = () => {
       <PlayerInfo player={player2} playerIcon={player02Icon} mt />
 
       <div className={`${styles.flexCenter} flex-col my-10`}>
-        <Card card={player2} title={player2?.playerName} cardRef="" playerTwo />
+        <Card
+          card={player2}
+          title={player2?.playerName}
+          cardRef={player2Ref}
+          playerTwo
+        />
 
         <div className="flex items-center flex-row">
           <ActionButton
@@ -120,7 +137,7 @@ const Battle = () => {
           <Card
             card={player1}
             title={player1?.playerName}
-            cardRef=""
+            cardRef={player1Ref}
             restStyles="mt-3"
           />
 

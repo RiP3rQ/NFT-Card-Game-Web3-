@@ -37,6 +37,9 @@ export const GlobalContextProvider = ({ children }) => {
   const [step, setStep] = useState(1);
   const [errorMessage, setErrorMessage] = useState("");
 
+  const player1Ref = useRef();
+  const player2Ref = useRef();
+
   //* Set battleground to local storage
   useEffect(() => {
     const isBattleground = localStorage.getItem("battleground");
@@ -114,6 +117,8 @@ export const GlobalContextProvider = ({ children }) => {
         walletAddress,
         setShowAlert,
         setUpdateGameData,
+        player1Ref,
+        player2Ref,
       });
     }
   }, [step, contract]);
@@ -179,6 +184,8 @@ export const GlobalContextProvider = ({ children }) => {
         setBattleGround,
         errorMessage,
         setErrorMessage,
+        player1Ref,
+        player2Ref,
       }}
     >
       {children}
