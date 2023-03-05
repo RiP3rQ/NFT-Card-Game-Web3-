@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { ethers } from "ethers";
 import Web3Modal from "web3modal";
+import { GetParams } from "../utils/onboard";
 import { useNavigate } from "react-router-dom";
 import { ABI, ADDRESS } from "../contract";
 import { createEventListeners } from "./createEventListeners";
@@ -33,6 +34,33 @@ export const GlobalContextProvider = ({ children }) => {
   });
   const [updateGameData, setUpdateGameData] = useState(0);
   const [battleGround, setBattleGround] = useState("bg-astral");
+  const [step, setStep] = useState(1);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  //* Set battleground to local storage
+  useEffect(() => {
+    const isBattleground = localStorage.getItem("battleground");
+
+    if (isBattleground) {
+      setBattleGround(isBattleground);
+    } else {
+      localStorage.setItem("battleground", battleGround);
+    }
+  }, []);
+
+  //* Reset web3 onboarding modal params
+  useEffect(() => {
+    const resetParams = async () => {
+      const currentStep = await GetParams();
+
+      setStep(currentStep.step);
+    };
+
+    resetParams();
+
+    window?.ethereum?.on("chainChanged", () => resetParams());
+    window?.ethereum?.on("accountsChanged", () => resetParams());
+  }, []);
 
   // set the wallet address to state
   const updateCurrentWalletAddress = async () => {
@@ -76,9 +104,9 @@ export const GlobalContextProvider = ({ children }) => {
     }
   }, [showAlert]);
 
-  // add listeners to contract events
+  //* Activate event listeners for the smart contract
   useEffect(() => {
-    if (contract) {
+    if (step === -1 && contract) {
       createEventListeners({
         navigate,
         contract,
@@ -88,7 +116,7 @@ export const GlobalContextProvider = ({ children }) => {
         setUpdateGameData,
       });
     }
-  }, [contract]);
+  }, [step, contract]);
 
   // set game data to state
   useEffect(() => {
@@ -119,6 +147,23 @@ export const GlobalContextProvider = ({ children }) => {
     fetchGameData();
   }, [contract, updateGameData]);
 
+  //* Handle error messages
+  useEffect(() => {
+    if (errorMessage) {
+      const parsedErrorMessage = errorMessage?.reason
+        ?.slice("execution reverted: ".length)
+        .slice(0, -1);
+
+      if (parsedErrorMessage) {
+        setShowAlert({
+          status: true,
+          type: "failure",
+          message: parsedErrorMessage,
+        });
+      }
+    }
+  }, [errorMessage]);
+
   return (
     <GlobalContext.Provider
       value={{
@@ -132,6 +177,8 @@ export const GlobalContextProvider = ({ children }) => {
         gameData,
         battleGround,
         setBattleGround,
+        errorMessage,
+        setErrorMessage,
       }}
     >
       {children}

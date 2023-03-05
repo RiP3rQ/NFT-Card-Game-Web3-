@@ -7,8 +7,14 @@ import styles from "../styles";
 
 const JoinBattle = () => {
   const navigate = useNavigate();
-  const { contract, gameData, setShowAlert, setBattleName, walletAddress } =
-    useGlobalContext();
+  const {
+    contract,
+    gameData,
+    setShowAlert,
+    setBattleName,
+    walletAddress,
+    setErrorMessage,
+  } = useGlobalContext();
 
   const handleClick = async (battleName) => {
     setBattleName(battleName);
